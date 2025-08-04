@@ -136,7 +136,7 @@ comfyui_outputImage_compressor/
 
 ## 联系方式
 
-项目链接：[https://github.com/your-username/comfyui_outputImage_compressor](https://github.com/your-username/comfyui_outputImage_compressor)
+项目链接：[https://github.com/your-username/comfyui_outputImage_compressor](https://github.com/gasdyueer/comfyui_outputImage_compressor)
 
 ## 鸣谢
 

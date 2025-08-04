@@ -134,7 +134,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-Project Link: [https://github.com/your-username/comfyui_outputImage_compressor](https://github.com/your-username/comfyui_outputImage_compressor)
+Project Link: [https://github.com/your-username/comfyui_outputImage_compressor](https://github.com/gasdyueer/comfyui_outputImage_compressor)
 
 ## Acknowledgements
 

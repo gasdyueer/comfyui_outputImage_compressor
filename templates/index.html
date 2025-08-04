@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片批量压缩工具 - ComfyUI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=range(100000)|random) }}">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237aa2f7'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                    </svg>
+                    图片批量压缩工具
+                    <span class="subtitle">ComfyUI 集成版</span>
+                </h1>
+                <div class="stats-panel">
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-files">0</span>
+                        <span class="stat-label">已选择</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-size">0 MB</span>
+                        <span class="stat-label">原始大小</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">
+                            <div class="flash-content">
+                                <span class="flash-icon"></span>
+                                <span class="flash-text">{{ message }}</span>
+                                <button class="flash-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                            </div>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <main class="main-content">
+            <section class="upload-section">
+                <form id="uploadForm">
+                    <div class="upload-area">
+                        <div id="drop-zone" class="drop-zone">
+                            <div class="drop-zone-content">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                                </svg>
+                                <h3>拖拽图片到这里</h3>
+                                <p>支持 JPG, PNG, GIF, BMP, TIFF 格式</p>
+                                <div class="upload-divider">
+                                    <span>或</span>
+                                </div>
+                                <label for="fileInput" class="custom-file-upload">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14,2 14,8 20,8"/>
+                                        <line x1="16" y1="13" x2="8" y2="13"/>
+                                        <line x1="16" y1="17" x2="8" y2="17"/>
+                                        <polyline points="10,9 9,9 8,9"/>
+                                    </svg>
+                                    选择文件
+                                </label>
+                                <input type="file" id="fileInput" name="files[]" multiple accept="image/*" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="file-list-display" class="file-list-display">
+                        <div class="file-list-header">
+                            <h3>已选择文件</h3>
+                            <div class="file-actions">
+                                <span class="file-count">0 个文件</span>
+                                <button type="button" id="clearFilesBtn" class="clear-button" style="display: none;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <polyline points="3,6 5,6 21,6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                    清空列表
+                                </button>
+                            </div>
+                        </div>
+                        <div class="file-list-container">
+                            <ul id="selected-files-list">
+                                <li class="empty-state">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14,2 14,8 20,8"/>
+                                    </svg>
+                                    <p>暂无文件，请拖拽或选择图片</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div id="compressed-results-display" class="file-list-display" style="display: none;">
+                        <div class="file-list-header">
+                            <h3>压缩结果</h3>
+                            <div class="file-actions">
+                                <div class="compression-stats">
+                                    <span class="size-reduction">压缩率: <span id="compression-ratio">0%</span></span>
+                                </div>
+                                <div class="download-controls">
+                                    <input type="text" id="zipNameInput" placeholder="自定义压缩包名称" class="zip-name-input">
+                                    <button type="button" id="downloadAllZipBtn" class="download-button" style="display: none;">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                            <polyline points="7,10 12,15 17,10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                        下载全部
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="file-list-container">
+                            <ul id="compressed-files-list">
+                                <!-- 压缩后的文件列表将通过 JS 添加到这里 -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <section class="settings-section">
+                        <h3>压缩设置</h3>
+                        <div class="settings-grid">
+                            <div class="form-group">
+                                <label for="quality">JPEG 质量</label>
+                                <div class="slider-container">
+                                    <input type="range" id="quality" name="quality" min="1" max="95" value="20" 
+                                           oninput="updateQualityValue(this.value)">
+                                    <div class="slider-info">
+                                        <span id="qualityValue">20</span>
+                                        <span class="quality-hint">数值越低，压缩率越高</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-row">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="optimize" name="optimize" checked>
+                                    <label for="optimize">
+                                        <span class="checkbox-label">优化文件大小</span>
+                                        <span class="checkbox-description">启用智能压缩算法，获得更小的文件</span>
+                                    </label>
+                                </div>
+
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="progressive" name="progressive" checked>
+                                    <label for="progressive">
+                                        <span class="checkbox-label">渐进式 JPEG</span>
+                                        <span class="checkbox-description">支持从模糊到清晰的渐进加载效果</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="form-group submit-section">
+                        <button type="submit" id="submitButton" disabled>
+                            <span class="button-content">
+                                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                    <polyline points="10,9 9,9 8,9"/>
+                                </svg>
+                                开始压缩
+                            </span>
+                        </button>
+                        <div id="loading-spinner" class="loading-spinner" style="display: none;">
+                            <div class="spinner"></div>
+                            <div class="loading-text">
+                                <p>正在压缩图片...</p>
+                                <span class="progress-text" id="progress-text">准备中...</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>基于 ComfyUI 的图片压缩工具 | 支持批量处理 | 高效快捷</p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js', v=range(100000)|random) }}"></script>
+</body>
+</html>

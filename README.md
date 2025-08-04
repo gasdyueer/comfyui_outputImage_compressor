@@ -38,7 +38,7 @@
 
 1. 克隆项目仓库：
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/gasdyueer/comfyui_outputImage_compressor.git
    cd comfyui_outputImage_compressor
    ```
 

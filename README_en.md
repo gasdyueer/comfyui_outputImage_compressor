@@ -36,7 +36,7 @@ For Windows users, we provide convenient batch scripts and PowerShell scripts th
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/gasdyueer/comfyui_outputImage_compressor.git
    cd comfyui_outputImage_compressor
    ```
 

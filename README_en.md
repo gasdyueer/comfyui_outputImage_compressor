@@ -6,6 +6,10 @@
 
 This is a Flask-based web application designed as a batch image compression tool for ComfyUI users. It supports multiple image formats, provides high-quality compression options, and preserves image metadata and workflow information.
 
+## UI界面预览
+
+![UI界面预览](docs\UI.png)
+
 ## Features
 
 - **Batch Processing**: Support uploading and compressing multiple image files simultaneously

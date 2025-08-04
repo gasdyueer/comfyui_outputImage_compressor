@@ -9,7 +9,7 @@
 
 ## UI界面预览
 
-![UI界面预览](docs\UI.png)
+![UI界面预览](docs/UI.png)
 
 
 ## 功能特性

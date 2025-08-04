@@ -8,7 +8,7 @@ This is a Flask-based web application designed as a batch image compression tool
 
 ## UI界面预览
 
-![UI界面预览](docs\UI.png)
+![UI界面预览](docs/UI.png)
 
 ## Features
 

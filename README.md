@@ -143,3 +143,9 @@ comfyui_outputImage_compressor/
 - [Flask](https://flask.palletsprojects.com/)
 - [Pillow](https://python-pillow.org/)
 - [JSZip](https://stuk.github.io/jszip/)
+
+## 吐槽
+昨晚我没注意阿里云这个免费额度机制，结果就无意中用了非免费额度的模型，qwen3-coder-408B，于是就扣费了。
+![我操](docs/wc.png)
+
+于是今天我紧急修改相关模型配置，应该就行了。😢
